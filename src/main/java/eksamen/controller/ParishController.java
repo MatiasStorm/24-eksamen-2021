@@ -1,23 +1,20 @@
 package eksamen.controller;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
-import com.fasterxml.jackson.core.JsonParseException;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import eksamen.model.Commune;
@@ -38,18 +35,6 @@ public class ParishController {
         this.communeRepository = communeRepository;
     }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Map<String, String> handleValidationExceptions(
-        MethodArgumentNotValidException ex) {
-            Map<String, String> errors = new HashMap<>();
-            ex.getBindingResult().getAllErrors().forEach((error) -> {
-                String fieldName = ((FieldError) error).getField();
-                String errorMessage = error.getDefaultMessage();
-                errors.put(fieldName, errorMessage);
-        });
-        return errors;
-    }
     @PostMapping(consumes="application/json", produces="application/json")
     public ResponseEntity<String> create(@RequestBody Parish parish) throws JsonProcessingException {
         Optional<Commune> optinalCommune = communeRepository.findById(parish.getCommune().getCommuneCode());
@@ -61,6 +46,48 @@ public class ParishController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @GetMapping(produces = "application/json")
+    public ResponseEntity<String> findAll() throws JsonProcessingException{
+        Iterable<Parish> parishes = parishRepository.findAll();
+        return ResponseEntity.ok(objectMapper.writeValueAsString(parishes));
+    }
 
+    @GetMapping(path="/{parishCode}", produces = "application/json")
+    public ResponseEntity<String> findById(@PathVariable int parishCode) throws JsonProcessingException{
+        Optional<Parish> optionalParish = parishRepository.findById(parishCode);
+        if(!optionalParish.isPresent()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Could not find parish");
+        }
+        return ResponseEntity.ok(objectMapper.writeValueAsString(optionalParish.get()));
+    }
 
+    @PutMapping(path="/{parishCode}", produces = "application/json", consumes="application/json")
+    public ResponseEntity<String> update(@PathVariable int parishCode, @RequestBody Parish parish) throws JsonProcessingException{
+        Optional<Commune> optinalCommune = communeRepository.findById(parish.getCommune().getCommuneCode());
+        if(!optinalCommune.isPresent()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unkown Commune");
+        }
+        parishRepository.save(parish);
+        String response = objectMapper.writeValueAsString(parish);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @DeleteMapping(path="/{parishCode}", produces = "application/json")
+    public ResponseEntity<String> deleteById(@PathVariable Integer parishCode){
+        Optional<Parish> optionalParish = parishRepository.findById(parishCode);
+        if(!optionalParish.isPresent()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Parish doesn't exists.");
+        }
+        parishRepository.deleteById(parishCode);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Successfully deleted");
+    }
 }
+
+
+
+
+
+
+
+
+

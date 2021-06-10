@@ -7,22 +7,15 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.validation.Valid;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-import org.hibernate.validator.constraints.NotEmpty;
 
 @Entity(name="sogn")
 public class Parish {
     @Id
     @Column(name="sogn_kode")
-    @Min(1)
-    private Integer parishCode;
+    private int parishCode;
 
     @JsonBackReference
     @ManyToOne
@@ -47,11 +40,11 @@ public class Parish {
 
     public Parish() {  }
 
-    public long getParishCode() {
+    public int getParishCode() {
         return parishCode;
     }
 
-    public void setParishCode(Integer parishCode) {
+    public void setParishCode(int parishCode) {
         this.parishCode = parishCode;
     }
 
