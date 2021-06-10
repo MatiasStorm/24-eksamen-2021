@@ -220,7 +220,7 @@ class ParishView {
 
         $(`#${this.deleteButtonId}`).on("click", () => {
             $.ajax({
-                url: `/sogn/${this.code}`,
+                url: `/sogn/${this.parish.id}`,
                 method: "DELETE",
                 success: (response) => {
                     this.unDraw();
@@ -241,7 +241,7 @@ class ParishView {
 
         $(`#${this.deleteButtonId}`).on("click", () => {
             $.ajax({
-                url: `/sogn/${this.code}`,
+                url: `/sogn/${this.parish.id}`,
                 method: "DELETE",
                 success: (response) => {
                     this.unDraw();

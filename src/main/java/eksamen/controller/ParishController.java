@@ -41,10 +41,9 @@ public class ParishController {
         if(!optinalCommune.isPresent()){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Ukendt Kommune");
         }
-        if(parishRepository.findById(parish.getParishCode()).isPresent()){
+        if(parishRepository.findByParishCode(parish.getParishCode()).isPresent()){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Sognekoden er i brug");
         }
-        
         parishRepository.save(parish);
         String response = objectMapper.writeValueAsString(parish);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -56,9 +55,9 @@ public class ParishController {
         return ResponseEntity.ok(objectMapper.writeValueAsString(parishes));
     }
 
-    @GetMapping(path="/{parishCode}", produces = "application/json")
-    public ResponseEntity<String> findById(@PathVariable int parishCode) throws JsonProcessingException{
-        Optional<Parish> optionalParish = parishRepository.findById(parishCode);
+    @GetMapping(path="/{parishId}", produces = "application/json")
+    public ResponseEntity<String> findById(@PathVariable long parishId) throws JsonProcessingException{
+        Optional<Parish> optionalParish = parishRepository.findById(parishId);
         if(!optionalParish.isPresent()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Could not find parish");
         }
@@ -71,18 +70,24 @@ public class ParishController {
         if(!optinalCommune.isPresent()){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unkown Commune");
         }
+        Optional<Parish> optionalParish = parishRepository.findByParishCode(parish.getParishCode());
+        if(optionalParish.isPresent()){
+            if(optionalParish.get().getId() != parish.getId()){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Sognekoden er i brug");
+            }
+        }
         parishRepository.save(parish);
         String response = objectMapper.writeValueAsString(parish);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @DeleteMapping(path="/{parishCode}", produces = "application/json")
-    public ResponseEntity<String> deleteById(@PathVariable Integer parishCode){
-        Optional<Parish> optionalParish = parishRepository.findById(parishCode);
+    @DeleteMapping(path="/{parishId}", produces = "application/json")
+    public ResponseEntity<String> deleteById(@PathVariable long parishId){
+        Optional<Parish> optionalParish = parishRepository.findById(parishId);
         if(!optionalParish.isPresent()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Parish doesn't exists.");
         }
-        parishRepository.deleteById(parishCode);
+        parishRepository.deleteById(parishId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Successfully deleted");
     }
 }

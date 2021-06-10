@@ -5,6 +5,8 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -16,7 +18,11 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 @Entity(name="sogn")
 public class Parish {
     @Id
-    @Column(name="sogn_kode")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id")
+	private long id;
+
+    @Column(name="sogn_kode", unique = true)
     private int parishCode;
 
     @JsonBackReference
@@ -25,7 +31,7 @@ public class Parish {
     private Commune commune;
 
     @Column(name="smitte_niveau", nullable=true)
-    private Double infectionRate;
+    private int infectionRate;
 
     @Column(name="navn", nullable=false, length=255)
     private String name;
@@ -34,14 +40,13 @@ public class Parish {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date closing;
 
-    public Parish(int parishCode, double infectionRate, String name, Date closing ){
-        this.parishCode = parishCode;
-        this.infectionRate = infectionRate;
-        this.name = name;
-        this.closing = closing;
+    public long getId(){
+        return this.id;
     }
 
-    public Parish() {  }
+    public void setId(long id){
+        this.id = id;
+    }
 
     public int getParishCode() {
         return parishCode;
@@ -59,11 +64,11 @@ public class Parish {
         this.commune = commune;
     }
 
-    public double getInfectionRate() {
+    public int getInfectionRate() {
         return infectionRate;
     }
 
-    public void setInfectionRate(Double infectionRate) {
+    public void setInfectionRate(int infectionRate) {
         this.infectionRate = infectionRate;
     }
 
