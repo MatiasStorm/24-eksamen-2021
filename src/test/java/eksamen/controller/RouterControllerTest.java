@@ -22,7 +22,7 @@ public class RouterControllerTest {
     public void indexTest() throws Exception{
         mockMvc.perform(get("/"))
             .andExpect(status().isOk())
-            .andExpect(content().string(containsString("Index page")));
+            .andExpect(content().string(containsString("commune-container")));
     }
 
 }
