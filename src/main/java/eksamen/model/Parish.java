@@ -1,6 +1,7 @@
 package eksamen.model;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,6 +10,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 
 @Entity(name="sogn")
@@ -29,9 +31,10 @@ public class Parish {
     private String name;
 
     @Column(name="nedlukning", nullable=true)
-    private LocalDate closing;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private Date closing;
 
-    public Parish(int parishCode, double infectionRate, String name, LocalDate closing ){
+    public Parish(int parishCode, double infectionRate, String name, Date closing ){
         this.parishCode = parishCode;
         this.infectionRate = infectionRate;
         this.name = name;
@@ -72,11 +75,11 @@ public class Parish {
         this.name = name;
     }
 
-    public LocalDate getClosing() {
+    public Date getClosing() {
         return closing;
     }
 
-    public void setClosing(LocalDate closing) {
+    public void setClosing(Date closing) {
         this.closing = closing;
     }
 }

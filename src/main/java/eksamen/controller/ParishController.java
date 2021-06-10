@@ -39,8 +39,12 @@ public class ParishController {
     public ResponseEntity<String> create(@RequestBody Parish parish) throws JsonProcessingException {
         Optional<Commune> optinalCommune = communeRepository.findById(parish.getCommune().getCommuneCode());
         if(!optinalCommune.isPresent()){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unkown Commune");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Ukendt Kommune");
         }
+        if(parishRepository.findById(parish.getParishCode()).isPresent()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Sognekoden er i brug");
+        }
+        
         parishRepository.save(parish);
         String response = objectMapper.writeValueAsString(parish);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -61,8 +65,8 @@ public class ParishController {
         return ResponseEntity.ok(objectMapper.writeValueAsString(optionalParish.get()));
     }
 
-    @PutMapping(path="/{parishCode}", produces = "application/json", consumes="application/json")
-    public ResponseEntity<String> update(@PathVariable int parishCode, @RequestBody Parish parish) throws JsonProcessingException{
+    @PutMapping(produces = "application/json", consumes="application/json")
+    public ResponseEntity<String> update(@RequestBody Parish parish) throws JsonProcessingException{
         Optional<Commune> optinalCommune = communeRepository.findById(parish.getCommune().getCommuneCode());
         if(!optinalCommune.isPresent()){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unkown Commune");
